@@ -1,5 +1,6 @@
 package ohm.softa.a08.tests;
 
+import ohm.softa.a08.Service.OpenMensaAPIService;
 import ohm.softa.a08.api.OpenMensaAPI;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -28,30 +29,16 @@ class OpenMensaAPITests {
 
 	@BeforeEach
 	void setUp() {
+		OpenMensaAPIService apiService = OpenMensaAPIService.getInstance();
 
-		// use this to intercept all requests and output them to the logging facilities
-		var interceptor = new HttpLoggingInterceptor();
-		interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-		/* create a OkHttpClient and register the interceptor */
-		var client = new OkHttpClient.Builder()
-			.addInterceptor(interceptor)
-			.build();
-
-		var retrofit = new Retrofit.Builder()
-			.addConverterFactory(GsonConverterFactory.create())
-			.baseUrl("http://openmensa.org/api/v2/")
-			.client(client)
-			.build();
-
-		/* retrieve a proxy object for the OpenMensaAPI interface */
-		api = retrofit.create(OpenMensaAPI.class);
+		api = apiService.getAPI();
 	}
 
 	@Test
 	void testGetMeals() throws IOException {
 		/* create a call to get all meals of the current day */
 		var mealsCall = api.getMeals(dateFormat.format(new Date()));
+//		mealsCall = api.getMeals("08-05-2023");
 
 		/* execute the call synchronous */
 		var mealsResponse = mealsCall.execute();

@@ -1,6 +1,7 @@
 package ohm.softa.a08.controller;
 
 import com.google.gson.Gson;
+import ohm.softa.a08.Service.OpenMensaAPIService;
 import ohm.softa.a08.api.OpenMensaAPI;
 import ohm.softa.a08.model.Meal;
 import javafx.application.Platform;
@@ -74,14 +75,11 @@ public class MainController implements Initializable {
 		meals = FXCollections.observableArrayList();
 		gson = new Gson();
 
-		/* initialize Retrofit instance */
-		var retrofit = new Retrofit.Builder()
-			.addConverterFactory(GsonConverterFactory.create(gson))
-			.baseUrl("http://openmensa.org/api/v2/")
-			.build();
+		OpenMensaAPIService apiService = OpenMensaAPIService.getInstance();
 
-		/* create OpenMensaAPI instance */
-		api = retrofit.create(OpenMensaAPI.class);
+		api = apiService.getAPI();
+
+
 	}
 
 	/**
