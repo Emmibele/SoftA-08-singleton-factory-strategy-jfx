@@ -26,4 +26,6 @@ public class CategoryFilter extends FilterBase{
 
 		return !contains;
 	}
+
+
 }

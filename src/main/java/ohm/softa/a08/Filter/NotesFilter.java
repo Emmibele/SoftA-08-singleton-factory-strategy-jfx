@@ -16,8 +16,10 @@ public class NotesFilter extends FilterBase{
 	@Override
 	protected boolean include(Meal m) {
 		for (String note : m.getNotes()) {
-			if (notes.contains(note)){
-				return false;
+			note = note.toLowerCase();
+			for(String filterNote : notes) {
+				if(note.contains(filterNote))
+					return false;
 			}
 		}
 		return true;

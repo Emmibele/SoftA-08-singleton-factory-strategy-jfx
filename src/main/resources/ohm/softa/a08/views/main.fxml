@@ -21,7 +21,7 @@
 		<GridPane.margin>
 			<Insets />
 		</GridPane.margin>
-		<ChoiceBox fx:id="filterChoiceBox" prefWidth="150.0">
+		<ChoiceBox fx:id="filterChoiceBox" onAction="#applyMealFilter" prefWidth="150.0">
 			<HBox.margin>
 				<Insets bottom="5.0" left="10.0" top="5.0" />
 			</HBox.margin>

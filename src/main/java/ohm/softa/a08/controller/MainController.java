@@ -1,6 +1,8 @@
 package ohm.softa.a08.controller;
 
 import com.google.gson.Gson;
+import ohm.softa.a08.Filter.IMealsFilter;
+import ohm.softa.a08.Filter.MealsFilterFactory;
 import ohm.softa.a08.Service.OpenMensaAPIService;
 import ohm.softa.a08.api.OpenMensaAPI;
 import ohm.softa.a08.model.Meal;
@@ -46,6 +48,7 @@ public class MainController implements Initializable {
 
 	private final OpenMensaAPI api;
 	private final ObservableList<Meal> meals;
+	private final LinkedList<Meal> unfilteredMeals;
 	private final Gson gson;
 
 	/**
@@ -73,13 +76,12 @@ public class MainController implements Initializable {
 	 */
 	public MainController() {
 		meals = FXCollections.observableArrayList();
+		unfilteredMeals = new LinkedList<>();
 		gson = new Gson();
 
 		OpenMensaAPIService apiService = OpenMensaAPIService.getInstance();
 
 		api = apiService.getAPI();
-
-
 	}
 
 	/**
@@ -102,6 +104,7 @@ public class MainController implements Initializable {
 	@FXML
 	public void doGetMeals() {
 		api.getMeals(openMensaDateFormat.format(new Date())).enqueue(new Callback<>() {
+
 			@Override
 			public void onResponse(Call<List<Meal>> call, Response<List<Meal>> response) {
 				logger.debug("Got response");
@@ -117,15 +120,9 @@ public class MainController implements Initializable {
 
 						return;
 					}
-
-					meals.clear();
-
-					if ("Vegetarian".equals(filterChoiceBox.getValue()))
-						meals.addAll(response.body().stream()
-							.filter(Meal::isVegetarian)
-							.collect(Collectors.toList()));
-					else
-						meals.addAll(response.body());
+					unfilteredMeals.clear();
+					unfilteredMeals.addAll(response.body());
+					applyMealFilter();
 				});
 			}
 
@@ -141,4 +138,12 @@ public class MainController implements Initializable {
 			}
 		});
 	}
+
+	@FXML
+	public void applyMealFilter(){
+		IMealsFilter filter = MealsFilterFactory.getStrategy(filterChoiceBox.getValue());
+		meals.clear();
+		meals.addAll(filter.filter(unfilteredMeals));
+	}
+
 }
